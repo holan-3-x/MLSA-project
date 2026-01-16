@@ -2,7 +2,7 @@
 
 **Course**: MLSA 2026  
 **Subject**: Neural Networks and Sequence Modeling  
-**Student**: Holan
+**Student**: Holan Omeed Kunimohammed
 
 ---
 
