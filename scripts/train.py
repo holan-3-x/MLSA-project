@@ -18,7 +18,7 @@ sys.path.append(os.path.join(os.path.dirname(__file__), '..'))
 from src.dataset import get_dataloaders
 from src.model import EncoderLayer, DecoderLayer, EncoderTransf, DecoderTransf, EncoderDecoderTransf
 
-def train():
+def train(resume_epoch=None):
     # Hyperparameters
     batch_size = 16
     epochs = 10
@@ -57,6 +57,18 @@ def train():
     decoder = DecoderTransf(declayer, n_layers=n_layers, max_len=max_summary_len)
     
     model = EncoderDecoderTransf(encoder, decoder, vocab_size, vocab_size, max_len=max_summary_len)
+    
+    # RESUME LOGIC
+    start_epoch = 0
+    if resume_epoch is not None:
+        ckpt_path = f'models/checkpoint_epoch_{resume_epoch}.pt'
+        if os.path.exists(ckpt_path):
+            print(f"--- Resuming from Epoch {resume_epoch} ---")
+            model.load_state_dict(torch.load(ckpt_path, map_location=device))
+            start_epoch = resume_epoch
+        else:
+            print(f"!!! Checkpoint {ckpt_path} not found !!!")
+
     model.to(device)
 
     # Loss and optimizer
@@ -65,8 +77,8 @@ def train():
 
     os.makedirs('models', exist_ok=True)
 
-    # Training loop
-    for epoch in range(epochs):
+    # Training loop starting from resume point
+    for epoch in range(start_epoch, epochs):
         model.train()
         total_loss = 0
         pbar = tqdm(train_loader, desc=f"Epoch {epoch+1}/{epochs}")
@@ -76,21 +88,12 @@ def train():
             decoder_input_ids = batch['decoder_input_ids'].to(device)
             labels = batch['labels'].to(device)
 
-            # We need to shift decoder_input_ids and labels for teacher forcing
-            # tgt_input = <s> ... </s> <pad>
-            # tgt_output = ... </s> <pad> <pad>
-            # But the dataset returns them same. Let's shift here.
-            
-            # Simple shifting:
-            # Inputs to decoder: all but last
-            # Labels: all but first
             dec_in = decoder_input_ids[:, :-1]
             targets = labels[:, 1:].contiguous()
 
             optimizer.zero_grad()
             logits = model(input_ids, dec_in)
             
-            # Flatten for loss calculation
             loss = criterion(logits.view(-1, vocab_size), targets.view(-1))
             loss.backward()
             optimizer.step()
@@ -126,4 +129,6 @@ def train():
         torch.save(model.state_dict(), f'models/checkpoint_epoch_{epoch+1}.pt')
 
 if __name__ == "__main__":
+    # To start from scratch: train()
+    # To resume from epoch 3: train(resume_epoch=3)
     train()
