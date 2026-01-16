@@ -108,6 +108,7 @@ def evaluate(checkpoint_path, num_samples=None):
     print(f"BLEU Score: {bleu_score.item():.4f}")
     print(f"ROUGE-L Score: {rouge_score['rougeL_fmeasure'].item():.4f}")
 
+    # Return dictionary for automated analysis
     return {
         "loss": avg_loss,
         "ppl": ppl,

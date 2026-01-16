@@ -87,16 +87,23 @@ def train(resume_epoch=None):
             decoder_input_ids = batch['decoder_input_ids'].to(device)
             labels = batch['labels'].to(device)
 
+            # Prepare decoder inputs and targets
+            # dec_in: BOS token + tokens 1 to N-1
+            # targets: tokens 1 to N (EOS token)
             dec_in = decoder_input_ids[:, :-1]
             targets = labels[:, 1:].contiguous()
 
+            # Forward pass
             optimizer.zero_grad()
             logits = model(input_ids, dec_in)
             
+            # Loss calculation: Model ignores padding tokens (index 1) which 
+            # are common due to 256/128 fixed length sequences.
             loss = criterion(logits.view(-1, vocab_size), targets.view(-1))
             loss.backward()
             optimizer.step()
 
+            # Progress monitoring
             total_loss += loss.item()
             perplexity = math.exp(loss.item()) if loss.item() < 100 else float('inf')
             pbar.set_postfix({'loss': loss.item(), 'ppl': perplexity})

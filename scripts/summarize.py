@@ -61,6 +61,7 @@ def summarize(code_snippet, checkpoint_path):
             if next_token.item() == tokenizer.eos_token_id:
                 break
     
+    # Convert token indices back to human-readable text
     summary = tokenizer.decode(generated[0], skip_special_tokens=True)
     return summary
 

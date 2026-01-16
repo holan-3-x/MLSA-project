@@ -1,1 +1,19 @@
+# Models and Large weights
 models/*.pt
+
+# Environments
+.venv/
+env/
+venv/
+ENV/
+
+# Python caching
+__pycache__/
+*.py[cod]
+*$py.class
+
+# IDE and System Files
+.vscode/
+.idea/
+.DS_Store
+*.ipynb_checkpoints

@@ -1,71 +1,71 @@
-# MLSA Transformer Project: Python Code Summarization
+# 🐍 Transformer-Based Python Code Summarization
 
-This project implements a custom Transformer model (Encoder-Decoder) for the task of Python code summarization (Code-to-Text). The model is designed to generate English docstrings from Python source code.
+[![MLSA 2026](https://img.shields.io/badge/Course-MLSA_2026-blue.svg)](https://github.com/holan/mlsa-transformer)
+[![PyTorch](https://img.shields.io/badge/Framework-PyTorch-EE4C2C.svg)](https://pytorch.org/)
+[![HuggingFace](https://img.shields.io/badge/Tokenizer-CodeBERT-yellow.svg)](https://huggingface.co/microsoft/codebert-base)
 
-## Project Adherence & Documentation
+This repository contains a 100% custom implementation of a **Transformer-based Sequence-to-Sequence (Seq2Seq)** model designed to translate Python source code into concise, human-readable English docstrings.
 
-- **Custom Architecture**: The core Transformer architecture (`src/model.py`) is a custom implementation ported and adapted from **Lecture 6: Transformers**.
-- **Pretrained Components**: Consistent with the project rules, we use the **pretrained Roberta Tokenizer** (`microsoft/codebert-base`) and its vocabulary. No pretrained *full* language models or models already trained on Python syntax were used for the main core.
+---
 
-### Hardware Acceleration
-- This project is optimized for **Apple Silicon** using the **MPS (Metal Performance Shaders)** backend for high-performance training on Mac hardware.
+## 🌟 Project Highlights
+- **🏗️ custom Architecture**: A deep-learning model built from scratch using PyTorch tensors, implementing multi-head attention and causal masking as per **Lecture 6: Transformers**.
+- **⚡ Performance Optimized**: High-performance training support for **Apple Silicon (MPS)** and **NVIDIA CUDA** environments.
+- **🔄 Fault-Tolerant Training**: Robust checkpointing system with Google Drive integration for seamless session recovery on Google Colab.
+- **📈 Data-Driven Analysis**: Comprehensive evaluation suite providing Loss, Perplexity, BLEU, and ROUGE-L metrics.
 
-## Setup Instructions
+---
 
-1.  **Environment Setup**:
-    ```bash
-    python3 -m venv .venv
-    source .venv/bin/activate
-    pip install torch datasets transformers torchmetrics
-    ```
+## 🚀 Getting Started
 
-2.  **Verify Setup**:
-    ```bash
-    python verify_setup.py
-    ```
-
-## Execution Steps
-
-### Option A: Local Training (Mac/MPS)
-If you want to train on your local machine with hardware acceleration (Apple Silicon):
+### 1. Environment Setup
+We recommend using a virtual environment to manage dependencies.
 ```bash
-python scripts/train.py
+python3 -m venv .venv
+source .venv/bin/activate
+pip install -r requirements.txt
 ```
+> [!NOTE]
+> Major dependencies include `torch`, `transformers`, `datasets`, and `torchmetrics`.
 
-### Option B: Cloud Training (Google Colab)
-If your local machine is overheating or lacks a powerful GPU:
-1.  Upload `Transformer_Colab_Training.ipynb` to Google Colab.
-2.  Enable a **GPU T4** or better runtime (Runtime -> Change runtime type).
-3.  Run all cells. The notebook is self-contained and will install dependencies automatically.
-4.  Download the generated `.pt` checkpoints to your local `models/` folder for evaluation/inference.
+### 2. Training (Colab Optimized)
+For high-performance training, use the included **`Transformer_Colab_Training.ipynb`**. 
+- **Setup**: One-click setup for Google Drive and dependencies.
+- **Safety**: Built-in VRAM management to ensure stability on T4 GPUs.
+- **Persistence**: Models are saved directly to `/content/drive/My Drive/MLSA_Transformer_Checkpoints`.
 
-### 2. Evaluation
-To evaluate a trained checkpoint and calculate text metrics (BLEU/ROUGE):
-```bash
-python scripts/evaluate.py models/checkpoint_epoch_10.pt --samples 100
-```
+### 3. Inference & Analysis
+Test the model or analyze trends locally:
+- **Summarize Code**:
+  ```bash
+  python scripts/summarize.py --model models/checkpoint_epoch_10.pt --input "def add(x, y): return x + y"
+  ```
+- **Generate Performance Charts**:
+  ```bash
+  python scripts/plot_metrics.py
+  ```
 
-### 3. Inference (Summarization)
-To generate a summary for a custom code snippet:
-```bash
-python scripts/summarize.py --model models/checkpoint_epoch_10.pt --input "def add(a, b): return a + b"
-```
+---
 
-### 4. Visualization (Real Metrics)
-To generate the real performance trend from all 10 saved checkpoints:
-```bash
-python scripts/evaluate_history.py --samples 50
-```
-This script evaluates every checkpoint and saves a multi-plot trend at `models/real_metrics_evolution.png`.
+## 📁 Repository Map
 
-## Metrics Implemented
-- **Cross-entropy loss**: Monitor training convergence.
-- **Perplexity**: Measures language model uncertainty (Ideal for report).
-- **BLEU score**: n-gram overlap with ground truth.
-- **ROUGE score**: Recall-based summary quality (Requires `nltk`).
+| Directory | Description |
+| :--- | :--- |
+| **`src/`** | Core library: `model.py` (Architecture) & `dataset.py` (Data Pipeline). |
+| **`scripts/`** | `train.py`, `evaluate.py`, `summarize.py`, and `plot_metrics.py`. |
+| **`data/`** | Local subsets (**50k train**) serialized from CodeXGLUE. |
+| **`models/`** | Storage for `.pt` checkpoints and evaluation visualizations. |
+| **`final_report.md`** | Detailed technical documentation and academic analysis. |
 
-## Repository Structure
-- `src/`: Core implementation (`model.py`, `dataset.py`).
-- `scripts/`: Execution logic (`train.py`, `evaluate.py`, `summarize.py`).
-- `models/`: Weights storage.
-- `verify_setup.py`: Environment verification utility.
+---
+
+## ⚖️ Academic Integrity & AI Assistance
+This project was developed for the **MLSA 2026** course. In the spirit of transparency:
+- **Core Implementation**: The Transformer architecture and data pipeline were manually implemented based on provided lecture notes.
+- **AI Assistance**: **Antigravity (LLM)** was utilized as a technical pair-programmer to assist with boilerplate structuring, debugging complex tensor shapes, and technical documentation drafting.
+- **Verification**: All outputs were manually reviewed and verified for alignment with course objectives and mathematical correctness.
+
+---
+
+## 📊 Documentation
+For a deep dive into the architecture, mathematical justification, and real training results, please refer to the **[Final Project Report](final_report.md)**.

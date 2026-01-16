@@ -91,17 +91,24 @@ class MultiHeadedAttention(nn.Module):
         return out
 
     def forward(self, query, mask=None):
+        """
+        Forward pass for Multi-Head Attention.
+        - query: [Batch, SeqLen, ModelDim]
+        - mask: [Batch, 1, SeqLen, SeqLen] (optional)
+        """
         if mask is not None and mask.dim() == 3:
-            # N, 1, L, L - every head uses the same mask
+            # Broadcast mask across all heads
             mask = mask.unsqueeze(1)
 
-        # N, n_heads, L, d_k
+        # 1. Project Query and split into heads: [Batch, Heads, SeqLen, HeadDim]
+        # 2. Key and Value already projected and split in init_keys()
         context = self.attn(query, mask=mask)
-        # N, L, n_heads, d_k
+        
+        # 3. Concatenate heads back together: [Batch, SeqLen, ModelDim]
         context = context.transpose(1, 2).contiguous()
-        # N, L, n_heads * d_k = N, L, d_model
         context = context.view(query.size(0), -1, self.d_model)
-        # N, L, d_model
+        
+        # 4. Final linear projection
         out = self.output_function(context)
         return out
 
@@ -112,9 +119,16 @@ class SubLayerWrapper(nn.Module):
         self.drop = nn.Dropout(dropout)
 
     def forward(self, x, sublayer, is_self_attn=False, **kwargs):
+        """
+        Residual connection + LayerNorm.
+        Following the 'Pre-LayerNorm' variation for stability.
+        """
         norm_x = self.norm(x)
         if is_self_attn:
+            # Self-attention requires keys to be initialized from current state
             sublayer.init_keys(norm_x)
+        
+        # Residual skip connection: Input + Dropout(Sublayer(Norm(Input)))
         out = x + self.drop(sublayer(norm_x, **kwargs))
         return out
 
