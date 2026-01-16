@@ -1,6 +1,5 @@
 """
 Dataset handling for the MLSA Transformer Project.
-LLM Help: Code snippets and structure assisted by Antigravity (AI).
 """
 
 import torch

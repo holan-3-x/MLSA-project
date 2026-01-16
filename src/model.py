@@ -1,7 +1,6 @@
 """
 Transformer architecture for the MLSA Transformer Project.
 Architecture adapted from Lecture 6: Transformers.
-LLM Help: Code snippets and structure assisted by Antigravity (AI).
 """
 
 import torch

@@ -4,9 +4,7 @@ This project implements a custom Transformer model (Encoder-Decoder) for the tas
 
 ## Project Adherence & Documentation
 
-### Adaptation & LLM Use
 - **Custom Architecture**: The core Transformer architecture (`src/model.py`) is a custom implementation ported and adapted from **Lecture 6: Transformers**.
-- **LLM Assistance**: Antigravity (AI) was used to assist in the coding process, structuring the repository, and implementing boilerplate logic.
 - **Pretrained Components**: Consistent with the project rules, we use the **pretrained Roberta Tokenizer** (`microsoft/codebert-base`) and its vocabulary. No pretrained *full* language models or models already trained on Python syntax were used for the main core.
 
 ### Hardware Acceleration
@@ -42,22 +40,29 @@ If your local machine is overheating or lacks a powerful GPU:
 4.  Download the generated `.pt` checkpoints to your local `models/` folder for evaluation/inference.
 
 ### 2. Evaluation
-To evaluate a trained checkpoint on the test set (calculates Loss, Perplexity, BLEU, and ROUGE):
+To evaluate a trained checkpoint and calculate text metrics (BLEU/ROUGE):
 ```bash
-python scripts/evaluate.py models/checkpoint_epoch_10.pt
+python scripts/evaluate.py models/checkpoint_epoch_10.pt --samples 100
 ```
 
 ### 3. Inference (Summarization)
 To generate a summary for a custom code snippet:
 ```bash
-python scripts/summarize.py models/checkpoint_epoch_10.pt "def add(a, b): return a + b"
+python scripts/summarize.py --model models/checkpoint_epoch_10.pt --input "def add(a, b): return a + b"
 ```
+
+### 4. Visualization (Real Metrics)
+To generate the real performance trend from all 10 saved checkpoints:
+```bash
+python scripts/evaluate_history.py --samples 50
+```
+This script evaluates every checkpoint and saves a multi-plot trend at `models/real_metrics_evolution.png`.
 
 ## Metrics Implemented
 - **Cross-entropy loss**: Monitor training convergence.
-- **Perplexity**: Qualitative measure of language model certainty.
-- **BLEU score**: Overlap of n-grams between prediction and reference.
-- **ROUGE score**: Recall-oriented assessment of summary quality.
+- **Perplexity**: Measures language model uncertainty (Ideal for report).
+- **BLEU score**: n-gram overlap with ground truth.
+- **ROUGE score**: Recall-based summary quality (Requires `nltk`).
 
 ## Repository Structure
 - `src/`: Core implementation (`model.py`, `dataset.py`).

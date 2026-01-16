@@ -1,1 +1,1 @@
-models/checkpoint_epoch_1.pt
+models/*.pt
